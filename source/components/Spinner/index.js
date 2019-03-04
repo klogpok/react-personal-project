@@ -7,13 +7,13 @@ import Styles from './styles.m.css';
 
 export default class Spinner extends Component {
     static propTypes = {
-        isTaskFetching: bool.isRequired,
+        isSpinning: bool.isRequired,
     }
     render () {
-        const { isTaskFetching } = this.props;
+        const { isSpinning } = this.props;
 
         return (
-            isTaskFetching && <div className = { Styles.spinner } />
+            isSpinning && <div className = { Styles.spinner } />
         );
     }
 }

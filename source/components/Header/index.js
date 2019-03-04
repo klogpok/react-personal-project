@@ -4,17 +4,17 @@ import { func } from 'prop-types';
 
 class Header extends Component {
   static propTypes = {
-      _onSearchValueChange: func.isRequired,
+      _updateTasksFilter: func.isRequired,
   }
 
   state = {
       inputValue: '',
   }
 
-  _onSearchValueChange = (event) => {
+  _updateTasksFilter = (event) => {
       this.setState({
           inputValue: event.target.value,
-      }, () => this.props._onSearchValueChange(this.state.inputValue.toLowerCase()));
+      }, () => this.props._updateTasksFilter(this.state.inputValue.toLowerCase()));
   }
 
   render () {
@@ -25,7 +25,7 @@ class Header extends Component {
                   placeholder = 'Search'
                   type = 'text'
                   value = { this.state.inputValue }
-                  onChange = { this._onSearchValueChange }
+                  onChange = { this._updateTasksFilter }
               />
           </header>
       );

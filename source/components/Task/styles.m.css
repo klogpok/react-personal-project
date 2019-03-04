@@ -24,7 +24,7 @@
         width: 85%;
 
         & .toggleTaskCompletedState {
-            margin-right: 20px;
+            margin-right: 20px;            
         }
 
         & span {
@@ -44,6 +44,7 @@
     }
 
     & .actions {
+        display: flex;
         min-width: 100px;
 
         & .toggleTaskFavoriteState,
