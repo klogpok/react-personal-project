@@ -12,6 +12,7 @@ import Styles from './styles.m.css';
 import { api } from '../../REST'; // ! Импорт модуля API должен иметь именно такой вид (import { api } from '../../REST')
 import { sortTasksByGroup } from '../../instruments/helpers';
 import Checkbox from '../../theme/assets/Checkbox';
+import FlipMove from 'react-flip-move';
 
 export default class Scheduler extends Component {
     state = {
@@ -121,7 +122,9 @@ export default class Scheduler extends Component {
     }
 
     _getAllCompleted = () => {
-        return !this.state.tasks.some((item) => !item.completed);
+        return !this.state.tasks.length
+            ? false
+            : !this.state.tasks.some((item) => !item.completed);
     }
 
     _renderTasks = () => {
@@ -158,7 +161,13 @@ export default class Scheduler extends Component {
                     <section>
                         <Composer _createTask = { this._createTaskAsync } />
                         <div>
-                            <ul>{tasksJSX}</ul>
+                            <ul>
+                                <FlipMove
+                                    enterAnimation = 'fade'
+                                    leaveAnimation = 'fade'>
+                                    {tasksJSX}
+                                </FlipMove>
+                            </ul>
                         </div>
                     </section>
                     <footer>

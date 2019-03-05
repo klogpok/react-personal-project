@@ -23,12 +23,10 @@ export default class Task extends PureComponent {
         super(props);
 
         this.taskInput = React.createRef();
-        this.newTaskMessage = this.props.message;
+        this.state.newTaskMessage = props.message;
     }
 
-    state = {
-        isTaskEditing: false,
-    }
+    state = { isTaskEditing: false };
 
     // _getTaskShape = ({
     //     id = this.props.id,
@@ -50,7 +48,7 @@ export default class Task extends PureComponent {
     });
 
     _removeTaskAsync = () => {
-        return this.props._removeTask(this.props.id);
+        return this.props._removeTaskAsync(this.props.id);
     }
 
     getTaskStyles = () => {
@@ -75,31 +73,66 @@ export default class Task extends PureComponent {
 
     _updateTaskMessageOnClick = () => {
 
-        //console.log(this.taskInput.value);
+        if (!this.state.isTaskEditing) {
+            this._setTaskEditingState(true);
+        } else {
+            this._updateTask();
 
-        //this.setState({ newTaskMessage: event.target.value });
+            return null;
+        }
+    }
 
+    _updateTask = () => {
+        this._setTaskEditingState(false);
+
+        if (this.state.newTaskMessage === this.props.message) {
+            return null;
+        }
+
+        this.props._updateTaskAsync({ ...this._getTaskShape(), message: this.state.newTaskMessage });
     }
 
     _updateNewTaskMessage = (event) => {
-        console.log(event.target.value);
         this.setState({ newTaskMessage: event.target.value });
     }
 
-    _setTaskEditingState () {
-        this.setState(({ isTaskEditing }) => ({
-            isTaskEditing: !isTaskEditing,
-        }));
+    _setTaskEditingState = (mode) => {
+        this.setState({ isTaskEditing: mode }, () => {
+            if (this.state.isTaskEditing) {
+                this.taskInput.current.focus();
+            }
+        });
+    }
 
-        if (this.isTaskEditing) {
-            this.taskInput.current.focus();
-            console.log('hop');
+    _cancelUpdatingTaskMessage = () => {
+        this.setState({ isTaskEditing: false, newTaskMessage: this.props.message });
+    }
+
+    _updateTaskMessageOnKeyDown = (event) => {
+        if (!this.state.newTaskMessage) {
+            return null;
         }
 
+        const key = event.key;
+
+        if (key === 'Enter') {
+            this._updateTask();
+        } else if (key === 'Escape') {
+            this._cancelUpdatingTaskMessage();
+        }
+    }
+
+    _moveCaretAtEnd = (event) => {
+        const temp = event.target.value;
+
+        event.target.value = '';
+        event.target.value = temp;
     }
 
     render () {
         const { completed, favorite } = this.props;
+
+        const { newTaskMessage } = this.state;
 
         const taskStyles = this.getTaskStyles();
 
@@ -114,14 +147,16 @@ export default class Task extends PureComponent {
                         onClick = { this._toggleTaskCompletedState }
                     />
                     <input
+                        autoFocus
                         disabled = { !this.state.isTaskEditing }
                         minLength = { 50 }
                         name = 'taskInput'
-                        onChange = { this._updateNewTaskMessage }
-                        onKeyDown = { this._updateTaskMessageOnKeyDown }
                         ref = { this.taskInput }
                         type = 'text'
-                        value = { this.state.newTaskMessage }
+                        value = { newTaskMessage }
+                        onChange = { this._updateNewTaskMessage }
+                        onFocus = { this._moveCaretAtEnd }
+                        onKeyDown = { this._updateTaskMessageOnKeyDown }
                     />
                 </div>
                 <div className = { Styles.actions }>
@@ -136,7 +171,7 @@ export default class Task extends PureComponent {
                         className = { Styles.updateTaskMessageOnClick }
                         color1 = '#3b8ef3'
                         color2 = '#363636'
-                        onClick = { this._setTaskEditingState }
+                        onClick = { this._updateTaskMessageOnClick }
                     />
                     <Remove
                         color1 = '#3b8ef3'
